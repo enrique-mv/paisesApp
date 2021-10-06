@@ -19,7 +19,6 @@ export class VerPaisComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private paisService: PaisService) { }
 
 
-
   ngOnInit(): void {
 
     this.activatedRoute.params
@@ -27,7 +26,18 @@ export class VerPaisComponent implements OnInit {
         switchMap(({ id }) => this.paisService.buscarAlphaPais(id)),
         tap(console.log)
       )
-      .subscribe((resp) => this.pais = <Pais>resp );
+      .subscribe((resp) => {
+
+        let error = resp as ErrorPais
+        
+        if (error.status === 400) {
+          this.hayError = true;
+          this.msjError = `No se encontraron coincidencias con la busqueda`;          
+          return;
+        }
+
+        this.pais = <Pais>resp
+      });
 
   }
 
